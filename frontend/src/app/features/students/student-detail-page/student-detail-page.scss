@@ -1,0 +1,21 @@
+.back {
+  margin: 0 0 0.5rem -0.75rem;
+}
+
+.identity {
+  flex: 1;
+
+  h1 {
+    margin: 0;
+    font: var(--mat-sys-headline-small);
+  }
+}
+
+.meta {
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+}
+
+.panel {
+  padding-top: 1.5rem;
+}

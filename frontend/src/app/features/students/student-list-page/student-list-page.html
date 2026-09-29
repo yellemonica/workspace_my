@@ -1,0 +1,96 @@
+<header class="page-header">
+  <h1>Students</h1>
+  <a mat-flat-button routerLink="new"><mat-icon>person_add</mat-icon>New student</a>
+</header>
+
+<mat-form-field class="full-width" subscriptSizing="dynamic">
+  <mat-label>Search by name or email</mat-label>
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput [formControl]="searchControl" autocomplete="off" />
+</mat-form-field>
+
+@let students = students$ | async;
+@let status = status$ | async;
+@let sort = sort$ | async;
+
+@if (status === 'error') {
+  <app-state-message kind="error" title="Could not load students" [message]="error$ | async">
+    <button mat-stroked-button (click)="reload()">Retry</button>
+  </app-state-message>
+} @else {
+  <div class="table-wrapper" [class.stale]="status === 'loading'">
+    <table
+      mat-table
+      [dataSource]="students ?? []"
+      matSort
+      [matSortActive]="sort?.active ?? 'name'"
+      [matSortDirection]="sort?.direction ?? 'asc'"
+      (matSortChange)="onSort($event)"
+    >
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+        <td mat-cell *matCellDef="let s">
+          <a [routerLink]="[s.id]">{{ s.lastName }}, {{ s.firstName }}</a>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let s">{{ s.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="enrollmentDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Enrolled</th>
+        <td mat-cell *matCellDef="let s">{{ s.enrollmentDate | date: 'mediumDate' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef><span class="cdk-visually-hidden">Actions</span></th>
+        <td mat-cell *matCellDef="let s" class="actions">
+          <a
+            mat-icon-button
+            [routerLink]="[s.id, 'edit']"
+            matTooltip="Edit"
+            [attr.aria-label]="'Edit ' + s.email"
+          >
+            <mat-icon>edit</mat-icon>
+          </a>
+          <button
+            mat-icon-button
+            (click)="onDelete(s)"
+            matTooltip="Delete"
+            [attr.aria-label]="'Delete ' + s.email"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+
+    @if (status === 'loaded' && !students?.length) {
+      <app-state-message
+        icon="group_off"
+        title="No students found"
+        [message]="
+          searchControl.value
+            ? 'Try a different search term.'
+            : 'Add the first student to get started.'
+        "
+      />
+    }
+
+    @if (query$ | async; as query) {
+      <mat-paginator
+        [length]="total$ | async"
+        [pageIndex]="query.page"
+        [pageSize]="query.size"
+        [pageSizeOptions]="[5, 10, 25]"
+        (page)="onPage($event)"
+        aria-label="Student pages"
+      />
+    }
+  </div>
+}

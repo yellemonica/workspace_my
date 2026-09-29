@@ -1,0 +1,26 @@
+.table-wrapper {
+  margin-top: 1rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-medium);
+  overflow: hidden;
+  transition: opacity 150ms;
+}
+
+.stale {
+  opacity: 0.6;
+}
+
+table {
+  width: 100%;
+}
+
+td a {
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.actions {
+  text-align: right;
+  white-space: nowrap;
+}

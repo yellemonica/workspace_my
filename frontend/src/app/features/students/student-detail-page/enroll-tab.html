@@ -1,0 +1,46 @@
+@let courses = availableCourses$ | async;
+@let status = status$ | async;
+@let selected = form.controls.courseIds.value.length;
+
+@if (optionsFailed()) {
+  <app-state-message kind="error" title="Courses could not be loaded" />
+} @else if (remainingSlots() <= 0) {
+  <app-state-message
+    icon="block"
+    title="Course limit reached"
+    message="A student can take at most 6 courses. Unenroll from one to enroll in another."
+  >
+    <a mat-stroked-button routerLink="../courses">View courses</a>
+  </app-state-message>
+} @else if (courses && !courses.length) {
+  <app-state-message icon="task_alt" title="No other courses available" />
+} @else if (courses) {
+  <form [formGroup]="form" (ngSubmit)="enroll()">
+    <p class="hint" [class.error]="status === 'INVALID'">
+      Select up to {{ remainingSlots() }} more course(s). {{ selected }} selected.
+    </p>
+    <mat-selection-list formControlName="courseIds" aria-label="Available courses">
+      @for (course of courses; track course.id) {
+        <mat-list-option [value]="course.id">
+          <span matListItemTitle>{{ course.code }} · {{ course.title }}</span>
+          <span matListItemLine
+            >{{ course.credits }} credits · {{ course.enrolledCount }} enrolled</span
+          >
+        </mat-list-option>
+      }
+    </mat-selection-list>
+    <div class="form-actions">
+      <button
+        mat-flat-button
+        type="submit"
+        [disabled]="!selected || status === 'INVALID' || enrolling()"
+      >
+        @if (enrolling()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          Enroll
+        }
+      </button>
+    </div>
+  </form>
+}

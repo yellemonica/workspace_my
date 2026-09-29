@@ -1,0 +1,50 @@
+@let status = status$ | async;
+@let student = student$ | async;
+
+<a mat-button routerLink="/students" class="back"><mat-icon>arrow_back</mat-icon>All students</a>
+
+@if (status === 'error') {
+  <app-state-message kind="error" title="Student could not be loaded" [message]="error$ | async">
+    <button mat-stroked-button (click)="retry()">Retry</button>
+  </app-state-message>
+} @else if (student) {
+  <header class="page-header">
+    <div class="identity">
+      <h1>{{ student.firstName }} {{ student.lastName }}</h1>
+      <span class="meta">
+        {{ student.email }} · {{ (enrollments$ | async)?.length }} / {{ maxCourses }} courses ·
+        {{ totalCredits$ | async }} credits
+      </span>
+    </div>
+    <a mat-stroked-button [routerLink]="['/students', student.id, 'edit']"
+      ><mat-icon>edit</mat-icon>Edit</a
+    >
+    <button
+      mat-icon-button
+      (click)="onDelete(student)"
+      matTooltip="Delete student"
+      aria-label="Delete student"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </header>
+
+  <nav mat-tab-nav-bar [tabPanel]="panel" aria-label="Student sections">
+    @for (tab of tabs; track tab.path) {
+      <a
+        mat-tab-link
+        [routerLink]="tab.path"
+        routerLinkActive
+        #rla="routerLinkActive"
+        [active]="rla.isActive"
+      >
+        {{ tab.label }}
+      </a>
+    }
+  </nav>
+  <mat-tab-nav-panel #panel>
+    <div class="panel">
+      <router-outlet />
+    </div>
+  </mat-tab-nav-panel>
+}
