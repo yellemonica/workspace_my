@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "courses",
@@ -28,6 +29,9 @@ public class Course {
 
     @Column(length = 2000)
     private String description;
+
+    @Formula("(select count(*) from enrollments e where e.course_id = id)")
+    private long enrolledCount;
 
     protected Course() {
     }
@@ -73,5 +77,9 @@ public class Course {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public long getEnrolledCount() {
+        return enrolledCount;
     }
 }
