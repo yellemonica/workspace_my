@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/student_management}
+    username: ${DB_USERNAME:student}
+    password: ${DB_PASSWORD:student}
+  h2:
+    console:
+      enabled: false
+  sql:
+    init:
+      mode: never
