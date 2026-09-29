@@ -1,0 +1,51 @@
+<header class="page-header">
+  <h1>Courses</h1>
+  <a mat-flat-button routerLink="new"><mat-icon>add</mat-icon>New course</a>
+</header>
+
+<mat-form-field class="full-width" subscriptSizing="dynamic">
+  <mat-label>Search by code or title</mat-label>
+  <mat-icon matPrefix>search</mat-icon>
+  <input matInput [formControl]="searchControl" autocomplete="off" />
+</mat-form-field>
+
+@let courses = courses$ | async;
+@let status = status$ | async;
+
+@switch (status) {
+  @case ('error') {
+    <app-state-message kind="error" title="Could not load courses" [message]="error$ | async">
+      <button mat-stroked-button (click)="reload()">Retry</button>
+    </app-state-message>
+  }
+  @default {
+    @if (courses?.length) {
+      <section class="grid" [class.stale]="status === 'loading'">
+        @for (course of courses; track course.id) {
+          <app-course-card [course]="course" (edit)="onEdit($event)" (delete)="onDelete($event)" />
+        }
+      </section>
+    } @else if (status === 'loaded') {
+      <app-state-message
+        icon="menu_book"
+        title="No courses found"
+        [message]="
+          searchControl.value
+            ? 'Try a different search term.'
+            : 'Create the first course to get started.'
+        "
+      />
+    }
+  }
+}
+
+@if (query$ | async; as query) {
+  <mat-paginator
+    [length]="total$ | async"
+    [pageIndex]="query.page"
+    [pageSize]="query.size"
+    [pageSizeOptions]="[6, 12, 24]"
+    (page)="onPage($event)"
+    aria-label="Course pages"
+  />
+}

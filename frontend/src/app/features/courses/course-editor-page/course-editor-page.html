@@ -1,0 +1,53 @@
+<header class="page-header">
+  <h1>{{ courseId() == null ? 'New course' : 'Edit course' }}</h1>
+</header>
+
+@if (loadFailed()) {
+  <app-state-message kind="error" title="Course could not be loaded">
+    <a mat-stroked-button routerLink="/courses">Back to courses</a>
+  </app-state-message>
+} @else {
+  @let status = status$ | async;
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="form-grid">
+      <mat-form-field>
+        <mat-label>Code</mat-label>
+        <input matInput formControlName="code" placeholder="CS101" autocomplete="off" />
+        @if (form.controls.code.pending) {
+          <mat-hint>Checking availability…</mat-hint>
+        }
+        <mat-error>{{ errorFor(form.controls.code) }}</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Credits</mat-label>
+        <input matInput type="number" formControlName="credits" min="1" max="6" />
+        <mat-error>{{ errorFor(form.controls.credits) }}</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      <mat-error>{{ errorFor(form.controls.title) }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="4"></textarea>
+      <mat-hint align="end">{{ form.controls.description.value.length }} / 2000</mat-hint>
+      <mat-error>{{ errorFor(form.controls.description) }}</mat-error>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <a mat-button routerLink="/courses">Cancel</a>
+      <button mat-flat-button type="submit" [disabled]="saving() || status === 'PENDING'">
+        @if (saving()) {
+          <mat-spinner diameter="18" />
+        } @else {
+          Save
+        }
+      </button>
+    </div>
+  </form>
+}
