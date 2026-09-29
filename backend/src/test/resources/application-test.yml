@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:student-management-test;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  sql:
+    init:
+      mode: never
+  h2:
+    console:
+      enabled: false
